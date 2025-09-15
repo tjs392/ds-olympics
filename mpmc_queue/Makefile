@@ -14,7 +14,7 @@ $(TARGET_TEST): $(SRC_TEST)
 	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
 $(TARGET_BENCH): $(SRC_BENCH)
-	$(CXX) $(CXXFLAGS) $^ -o $@ 
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
 test: $(TARGET_TEST)
 	./$(TARGET_TEST)
@@ -22,5 +22,18 @@ test: $(TARGET_TEST)
 benchmark: $(TARGET_BENCH)
 	./$(TARGET_BENCH)
 
+perf: $(TARGET_BENCH)
+	@echo "==== Running perf: cache misses highlighted ===="
+	../../wsl2-tools/WSL2-Linux-Kernel/tools/perf/perf stat \
+		-e cache-misses,cache-references,cycles,instructions,branches,branch-misses \
+		-r 3 \
+		./$(TARGET_BENCH)
+
+perf-detailed: $(TARGET_BENCH)
+	../../wsl2-tools/WSL2-Linux-Kernel/tools/perf/perf record -e cache-misses:u ./$(TARGET_BENCH)
+
+perf-report: $(TARGET_BENCH)
+	../../wsl2-tools/WSL2-Linux-Kernel/tools/perf/perf report
+
 clean:
-	rm -f $(TARGET_TEST) $(TARGET_BENCH)
+	rm -f $(TARGET_TEST) $(TARGET_BENCH) perf.data

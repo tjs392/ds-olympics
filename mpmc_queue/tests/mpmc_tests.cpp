@@ -5,7 +5,7 @@
 #include <mutex>
 #include <unordered_set>
 
-using namespace ds_olympics;
+using namespace mpmc_queue;
 
 TEST(MPMCQueueTest, BasicPushPop) {
     MPMCQueue<int> q(4);
